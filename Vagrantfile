@@ -16,29 +16,43 @@ Vagrant.configure(2) do |config|
   # boxes at https://atlas.hashicorp.com/search.
 
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get install software-properties-common -y
-    apt-add-repository ppa:ansible/ansible -y
+
+    apt-get install software-properties-common apt-transport-https -y
     apt-get update
-    apt-get install git htop tree vim dos2unix ansible -y
+
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+    apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+    apt-get install python python-jinja2 -y
+
+    apt-get install git htop tree vim dos2unix -y
     
-    dos2unix /vagrant/install-kubernetes.sh
+    dos2unix /vagrant/*.sh
+    dos2unix /vagrant/*.py
+
+    /vagrant/redner.py hosts.tpl /etc/hosts
+    
     bash /vagrant/install-kubernetes.sh
   SHELL
 
   config.vm.define "master" do |master|
     master.vm.hostname = "master"
+    master.vm.network "private_network", ip: "10.99.0.10"
   end
 
   config.vm.define "node1" do |node1|
     node1.vm.hostname = "node1"
+    node1.vm.network "private_network", ip: "10.99.0.11"
   end
 
   config.vm.define "node2" do |node2|
     node2.vm.hostname = "node2"
+    node2.vm.network "private_network", ip: "10.99.0.12"
   end
 
   config.vm.define "node3" do |node3|
     node3.vm.hostname = "node3"
+    node3.vm.network "private_network", ip: "10.99.0.13"
   end
 
 
