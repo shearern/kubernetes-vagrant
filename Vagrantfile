@@ -7,7 +7,7 @@
 Vagrant.configure(2) do |config|
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "2048"
+    vb.memory = "1024"
     vb.cpus = 2
   end
 
@@ -17,22 +17,23 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
 
-    apt-get install software-properties-common apt-transport-https -y
-    apt-get update
+    apt-get install software-properties-common apt-transport-https ca-certificates curl -y
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
 
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-    apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
+    apt-get update
+
+    apt-get install git htop tree vim dos2unix curl -y
     apt-get install python python-jinja2 -y
-
-    apt-get install git htop tree vim dos2unix -y
     
     dos2unix /vagrant/*.sh
     dos2unix /vagrant/*.py
 
-    /vagrant/redner.py hosts.tpl /etc/hosts
+    /vagrant/render.py hosts.tpl /etc/hosts
     
-    bash /vagrant/install-kubernetes.sh
+    bash /vagrant/install-swarm.sh
   SHELL
 
   config.vm.define "master" do |master|
@@ -50,52 +51,9 @@ Vagrant.configure(2) do |config|
     node2.vm.network "private_network", ip: "10.99.0.12"
   end
 
-  config.vm.define "node3" do |node3|
-    node3.vm.hostname = "node3"
-    node3.vm.network "private_network", ip: "10.99.0.13"
-  end
-
-
-  # config.vm.define "workstation" do |workstation|
-  #   workstation.vm.hostname = "workstation"
-  #   workstation.vm.network "private_network", ip: "10.50.0.10"
-  # end
-
-  # config.vm.define "admin" do |admin|
-  #   admin.vm.hostname = "admin"
-  #   admin.vm.network "private_network", ip: "10.50.0.11"
-  # end
-
-  # config.vm.define "monitor" do |monitor|
-  #   monitor.vm.hostname = "monitor"
-  #   monitor.vm.network "private_network", ip: "10.50.0.12"
-  #   monitor.vm.network "forwarded_port", guest: 80, host: 8000
-  # end
-
-  # config.vm.define "source" do |source|
-  #   source.vm.hostname = "source"
-  #   source.vm.network "private_network", ip: "10.50.0.13"
-  #   source.vm.network "forwarded_port", guest: 8003, host: 8003
-  #   source.vm.provider "virtualbox" do |vb|
-  #     vb.memory = "4098"
-  #   end
-  # end
-
-  # config.vm.define "media" do |media|
-  #   media.vm.hostname = "media"
-  #   media.vm.network "private_network", ip: "10.50.0.14"
-  #   media.vm.network "forwarded_port", guest: 80, host: 8005
-  # end
-
-  # config.vm.define "iandi" do |iandi|
-  #   iandi.vm.hostname = "iandi"
-  #   iandi.vm.network "private_network", ip: "10.50.0.15"
-  #   iandi.vm.network "forwarded_port", guest: 80, host: 8004
-  # end
-
-  # config.vm.define "backup" do |backup|
-  #   backup.vm.hostname = "backup"
-  #   backup.vm.network "private_network", ip: "10.50.0.16"
+  # config.vm.define "node3" do |node3|
+  #   node3.vm.hostname = "node3"
+  #   node3.vm.network "private_network", ip: "10.99.0.13"
   # end
 
 end
