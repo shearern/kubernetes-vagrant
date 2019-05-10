@@ -50,7 +50,3 @@ echo ""
 echo "docker info"
 docker info
 
-if [ $NODE_TYPE == 'master' ]; then
-	echo "docker node ls" >> /home/vagrant/.bashrc
-fi
-

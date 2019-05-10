@@ -1,0 +1,3 @@
+
+
+/vagrant/swarm-motd.sh

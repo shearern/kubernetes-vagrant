@@ -33,12 +33,15 @@ Vagrant.configure(2) do |config|
 
     /vagrant/render.py hosts.tpl /etc/hosts
     
+    echo ". /vagrant/swarm-bashrc.sh" >> /home/vagrant/.bashrc
+
     bash /vagrant/install-swarm.sh
   SHELL
 
   config.vm.define "master" do |master|
     master.vm.hostname = "master"
     master.vm.network "private_network", ip: "10.99.0.10"
+    master.vm.network "forwarded_port", guest: 80, host: 80
   end
 
   config.vm.define "node1" do |node1|
